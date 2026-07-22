@@ -33,6 +33,7 @@ export function buildCvDocx(name: string, bodyText: string): Promise<Buffer> {
       continue;
     }
     const isHeading = /^[A-Z0-9 &/\-]+$/.test(trimmed) && trimmed.length > 2 && trimmed.length < 60;
+    const isSubheading = trimmed.startsWith('## ');
     const isBullet = trimmed.startsWith('- ');
 
     if (isHeading) {
@@ -41,6 +42,13 @@ export function buildCvDocx(name: string, bodyText: string): Promise<Buffer> {
           text: trimmed,
           heading: HeadingLevel.HEADING_1,
           spacing: { before: 240, after: 120 },
+        })
+      );
+    } else if (isSubheading) {
+      paragraphs.push(
+        new Paragraph({
+          children: [new TextRun({ text: trimmed.replace(/^##\s*/, ''), bold: true })],
+          spacing: { before: 160, after: 40 },
         })
       );
     } else if (isBullet) {
@@ -129,4 +137,37 @@ export function buildCoverLetterDocx(bodyText: string): Promise<Buffer> {
  */
 export function buildPostTxt(post: string): Buffer {
   return Buffer.from(post, 'utf-8');
+}
+
+/**
+ * DOCX download for the LinkedIn post. Deliberately has no title heading —
+ * a post isn't a titled document — just the post text as plain paragraphs,
+ * preserving the Unicode bold characters already baked into the content.
+ */
+export function buildPostDocx(post: string): Promise<Buffer> {
+  const paragraphs = post
+    .split('\n')
+    .map((line) => new Paragraph({ children: [new TextRun(line)], spacing: { after: 120 } }));
+
+  const doc = new Document({
+    styles: {
+      default: {
+        document: {
+          run: { font: 'Calibri', size: 22 },
+        },
+      },
+    },
+    sections: [
+      {
+        properties: {
+          page: {
+            margin: { top: 1000, bottom: 1000, left: 1000, right: 1000 },
+          },
+        },
+        children: paragraphs,
+      },
+    ],
+  });
+
+  return Packer.toBuffer(doc);
 }

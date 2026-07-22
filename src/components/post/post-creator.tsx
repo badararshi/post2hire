@@ -28,6 +28,7 @@ export function PostCreator() {
 
   const [imageUrl, setImageUrl] = useState('');
   const [imageAlt, setImageAlt] = useState('');
+  const [imageError, setImageError] = useState('');
 
   const wordCount = useMemo(() => countWords(subject), [subject]);
   const overWordLimit = wordCount > 32;
@@ -67,6 +68,8 @@ export function PostCreator() {
 
   async function generateImage() {
     setImageLoading(true);
+    setImageError('');
+    setImageUrl('');
     try {
       const res = await fetch('/api/generate/image', {
         method: 'POST',
@@ -77,9 +80,11 @@ export function PostCreator() {
       if (res.ok) {
         setImageUrl(`data:${data.mimeType};base64,${data.imageBase64}`);
         setImageAlt(data.altText);
+      } else {
+        setImageError(data.error || 'Could not generate an image.');
       }
     } catch {
-      // Non-fatal — post still stands without an image.
+      setImageError('Network error while generating the image.');
     } finally {
       setImageLoading(false);
     }
@@ -127,6 +132,7 @@ export function PostCreator() {
     setBoldPercent(0);
     setWarnings([]);
     setImageUrl('');
+    setImageError('');
     setError('');
   }
 
@@ -235,13 +241,17 @@ export function PostCreator() {
         </div>
       )}
 
-      {wantImage && (imageLoading || imageUrl) && (
+      {wantImage && (imageLoading || imageUrl || imageError) && (
         <div className="card space-y-3">
           <h2 className="font-display font-bold text-ink">Post image</h2>
           {imageLoading ? (
             <div className="flex h-64 items-center justify-center rounded-card bg-surface text-sm text-muted">
               Generating image…
             </div>
+          ) : imageError ? (
+            <p role="alert" className="rounded-card bg-red-50 px-4 py-3 text-sm text-danger">
+              {imageError}
+            </p>
           ) : (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -29,6 +29,8 @@ FORMATTING RULES (for ATS compatibility):
 OUTPUT FORMAT:
 Return the tailored CV as plain structured text with clear section headings in ALL CAPS on their own line (e.g. "PROFESSIONAL SUMMARY", "WORK EXPERIENCE"), and bullet points starting with "- ". Do not include any preamble, explanation, or commentary — output only the CV content itself.
 
+For every Work Experience and Education entry, put the role/qualification, organization, and dates on their own single line, prefixed with "## " (e.g. "## Senior Marketing Manager — Acme Corp | Jan 2022 - Present"), immediately followed by that entry's "- " bullet points underneath it. This "## " prefix is a structural marker for the document renderer, not something the candidate would see verbatim — use it consistently for every entry.
+
 After the CV content, on a new line write exactly: ---FLAGS---
 Then list, as short bullet points, any job requirements that the candidate's CV does not demonstrate (gaps worth the candidate's awareness). If there are no significant gaps, write "No significant gaps identified." This flags section will be shown to the user separately and will NEVER appear inside the CV document itself.`;
 }

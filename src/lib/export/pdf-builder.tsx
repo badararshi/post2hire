@@ -6,6 +6,7 @@ const styles = StyleSheet.create({
   page: { padding: 48, fontSize: 11, fontFamily: 'Helvetica', color: '#1E2A5A' },
   title: { fontSize: 20, fontWeight: 700, marginBottom: 16 },
   heading: { fontSize: 13, fontWeight: 700, marginTop: 16, marginBottom: 6, color: '#1E2A5A' },
+  subheading: { fontSize: 11, fontWeight: 700, marginTop: 10, marginBottom: 2, color: '#1E2A5A' },
   paragraph: { fontSize: 11, marginBottom: 8, lineHeight: 1.5, textAlign: 'justify', color: '#22304f' },
   bullet: { fontSize: 11, marginBottom: 4, lineHeight: 1.4, color: '#22304f', paddingLeft: 12 },
 });
@@ -27,12 +28,20 @@ function CvPdfDocument({ name, bodyText }: { name: string; bodyText: string }) {
           const trimmed = line.trim();
           if (!trimmed) return <View key={i} style={{ height: 6 }} />;
           const isHeading = /^[A-Z0-9 &/\-]+$/.test(trimmed) && trimmed.length > 2 && trimmed.length < 60;
+          const isSubheading = trimmed.startsWith('## ');
           const isBullet = trimmed.startsWith('- ');
 
           if (isHeading) {
             return (
               <Text key={i} style={styles.heading}>
                 {trimmed}
+              </Text>
+            );
+          }
+          if (isSubheading) {
+            return (
+              <Text key={i} style={styles.subheading}>
+                {trimmed.replace(/^##\s*/, '')}
               </Text>
             );
           }

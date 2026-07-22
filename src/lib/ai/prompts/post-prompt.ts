@@ -4,7 +4,7 @@ export function buildPostSystemPrompt(): string {
 Write ONE LinkedIn post about the subject the user gives you. Follow these rules exactly:
 
 STRUCTURE (in this order):
-1. A strong opening hook — one or two lines that create curiosity or name the stakes immediately. No "In today's fast-paced world" style openers.
+1. A **bolded, headline-style opening line** — under 12 words, punchy and specific, functioning as the post's title even though LinkedIn posts have no separate title field. It must create immediate curiosity or name the stakes. No "In today's fast-paced world" style openers, no generic statements. This line is always wrapped in double asterisks so it renders bold.
 2. The real problem, pain point, or misconception connected to the subject, and why it actually matters (not abstract — make it concrete).
 3. A practical, logical solution explained in an ELI5 way: simple and plain, never childish or condescending.
 4. Clear, numbered, step-by-step implementation guidance the reader can act on immediately.

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireVerifiedUser, AuthError } from '@/lib/supabase/require-user';
-import { buildCvDocx, buildCoverLetterDocx, buildPostTxt } from '@/lib/export/docx-builder';
+import { buildCvDocx, buildCoverLetterDocx, buildPostTxt, buildPostDocx } from '@/lib/export/docx-builder';
 import { buildCvPdf, buildCoverLetterPdf } from '@/lib/export/pdf-builder';
 import { sanitizeFilename } from '@/lib/text/unicode';
 
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         contentType = 'text/plain; charset=utf-8';
         break;
       case 'post-docx':
-        buffer = await buildCvDocx('', content); // reuse simple paragraph renderer
+        buffer = await buildPostDocx(content);
         filename = 'LinkedIn_Post.docx';
         contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
         break;
