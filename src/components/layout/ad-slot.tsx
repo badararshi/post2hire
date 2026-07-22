@@ -32,8 +32,27 @@ export function AdSlot({ label, width, height, snippet, className = '' }: AdSlot
 
   useEffect(() => {
     if (!hasConsent || !snippet || !containerRef.current) return;
+    const container = containerRef.current;
+    container.innerHTML = '';
     try {
-      containerRef.current.innerHTML = snippet;
+      // Ad snippets are <script> tags (inline config + an external loader,
+      // or a single async loader). Scripts inserted via innerHTML are never
+      // executed by the browser, so each one is recreated as a real <script>
+      // element and appended, which does execute.
+      const doc = new DOMParser().parseFromString(snippet, 'text/html');
+      Array.from(doc.body.childNodes).forEach((node) => {
+        if (node.nodeName === 'SCRIPT') {
+          const oldScript = node as HTMLScriptElement;
+          const newScript = document.createElement('script');
+          Array.from(oldScript.attributes).forEach((attr) => {
+            newScript.setAttribute(attr.name, attr.value);
+          });
+          newScript.text = oldScript.text;
+          container.appendChild(newScript);
+        } else {
+          container.appendChild(node.cloneNode(true));
+        }
+      });
     } catch {
       setFailed(true);
     }

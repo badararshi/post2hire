@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { getAdSettings } from '@/lib/supabase/site-settings';
 import { CvGenerator } from '@/components/cv/cv-generator';
 import { AdSlot } from '@/components/layout/ad-slot';
 
@@ -14,6 +15,8 @@ export default async function CvToolPage() {
   if (!user) redirect('/sign-in?next=/tools/cv');
   if (!user.email_confirmed_at) redirect('/check-email');
 
+  const ads = await getAdSettings();
+
   return (
     <div className="mx-auto max-w-content px-4 py-10 sm:py-14">
       <h1 className="font-display text-2xl font-bold text-ink sm:text-3xl">
@@ -27,7 +30,12 @@ export default async function CvToolPage() {
         <CvGenerator />
       </div>
       <div className="mt-12">
-        <AdSlot label="Advertisement" width={300} height={250} />
+        <AdSlot
+          label="Advertisement"
+          width={300}
+          height={250}
+          snippet={ads.adsEnabled ? ads.mid : undefined}
+        />
       </div>
     </div>
   );

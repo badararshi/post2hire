@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+import { getAdSettings } from '@/lib/supabase/site-settings';
 import { Wordmark } from '@/components/layout/wordmark';
 import { AdSlot } from '@/components/layout/ad-slot';
 
@@ -8,6 +9,7 @@ export default async function HomePage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const ads = await getAdSettings();
 
   return (
     <div className="flex flex-col items-center px-4 py-16 sm:py-24">
@@ -81,7 +83,12 @@ export default async function HomePage() {
       </div>
 
       <div className="mt-16 w-full">
-        <AdSlot label="Advertisement" width={728} height={90} />
+        <AdSlot
+          label="Advertisement"
+          width={728}
+          height={90}
+          snippet={ads.adsEnabled ? ads.header : undefined}
+        />
       </div>
     </div>
   );
