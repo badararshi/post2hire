@@ -33,7 +33,7 @@ const nextConfig = {
               "img-src 'self' data: blob: https://*.supabase.co https://*.adsterra.com",
               "font-src 'self' data:",
               "frame-src https://challenges.cloudflare.com https://*.adsterra.com https://*.highperformanceformat.com",
-              "connect-src 'self' https://*.supabase.co",
+              "connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com",
               "frame-ancestors 'none'",
             ].join('; '),
           },
