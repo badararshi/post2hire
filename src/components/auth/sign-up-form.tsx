@@ -41,6 +41,7 @@ export function SignUpForm() {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
+        captchaToken: turnstileToken || undefined,
       },
     });
     setLoading(false);
