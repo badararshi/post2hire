@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-white text-ink antialiased;
+  }
+  ::selection {
+    @apply bg-azure-tint text-ink;
+  }
+  :focus-visible {
+    outline: 2px solid theme('colors.azure.DEFAULT');
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-card bg-azure px-5 py-2.5 text-sm font-semibold text-white shadow-card transition-colors hover:bg-azure-dark disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-card border border-line bg-white px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-azure hover:text-azure disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-card px-4 py-2 text-sm font-medium text-muted transition-colors hover:bg-azure-tint hover:text-azure;
+  }
+  .input-field {
+    @apply w-full rounded-card border border-line bg-white px-4 py-3 text-base text-ink placeholder:text-muted/70 transition-colors focus:border-azure focus:outline-none focus:ring-2 focus:ring-azure/20;
+  }
+  .card {
+    @apply rounded-card border border-line bg-white p-6 shadow-card;
+  }
+  .ad-slot {
+    @apply flex items-center justify-center rounded-card border border-dashed border-line bg-surface text-xs font-medium uppercase tracking-wide text-muted;
+  }
+}
