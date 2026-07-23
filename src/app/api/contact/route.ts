@@ -70,57 +70,59 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'CAPTCHA verification failed. Please try again.' }, { status: 400 });
     }
 
+    // Storing the message is the source of truth — the admin panel reads
+    // from this table, independent of whether either email below succeeds.
+    // If this fails, the message is genuinely lost, so it's the one thing
+    // that fails the request.
+    try {
+      const { createAdminClient } = await import('@/lib/supabase/admin');
+      const supabase = createAdminClient();
+      const { error: insertError } = await supabase
+        .from('contact_messages')
+        .insert({ name, email, subject, message });
+      if (insertError) throw insertError;
+    } catch (e) {
+      console.error('Contact form: could not store message:', e);
+      return NextResponse.json(
+        { error: 'Could not send your message. Please try again.' },
+        { status: 500 }
+      );
+    }
+
     const resendKey = process.env.RESEND_API_KEY;
     const toEmail = process.env.CONTACT_TO_EMAIL;
     const fromEmail = process.env.CONTACT_FROM_EMAIL || 'Post2Hire <onboarding@resend.dev>';
 
-    if (!resendKey || !toEmail) {
-      console.error('Contact form: RESEND_API_KEY or CONTACT_TO_EMAIL missing.');
-      return NextResponse.json({ error: 'Contact form is not configured yet.' }, { status: 500 });
-    }
+    if (resendKey && toEmail) {
+      // Email delivery is best-effort from here — the message is already
+      // safely stored above and visible in /admin either way. The Resend
+      // SDK returns { data, error } rather than throwing on API errors
+      // (e.g. the resend.dev testing-domain restriction), so both results
+      // are checked and logged rather than left to fail silently.
+      const resend = new Resend(resendKey);
 
-    const resend = new Resend(resendKey);
+      const { error: notifyError } = await resend.emails.send({
+        from: fromEmail,
+        to: toEmail,
+        replyTo: email,
+        subject: `[Post2Hire Contact] ${subject}`,
+        text: `From: ${name} <${email}>\n\n${message}`,
+      });
+      if (notifyError) {
+        console.error('Contact form: failed to notify admin inbox:', notifyError);
+      }
 
-    // The Resend SDK returns { data, error } rather than throwing on API
-    // errors (e.g. the resend.dev testing-domain restriction), so both
-    // results must be checked explicitly — otherwise a rejected send is
-    // silently reported to the user as success.
-    const { error: notifyError } = await resend.emails.send({
-      from: fromEmail,
-      to: toEmail,
-      replyTo: email,
-      subject: `[Post2Hire Contact] ${subject}`,
-      text: `From: ${name} <${email}>\n\n${message}`,
-    });
-
-    if (notifyError) {
-      console.error('Contact form: failed to notify admin inbox:', notifyError);
-      return NextResponse.json(
-        { error: 'Could not send your message right now. Please try again later.' },
-        { status: 502 }
-      );
-    }
-
-    const { error: confirmError } = await resend.emails.send({
-      from: fromEmail,
-      to: email,
-      subject: 'We received your message — Post2Hire',
-      text: `Hi ${name},\n\nThanks for reaching out to Post2Hire. We've received your message and will get back to you shortly.\n\nYour message:\n"${message}"\n\n— The Post2Hire Team`,
-    });
-
-    if (confirmError) {
-      // Non-fatal — the admin notification above is what actually matters;
-      // the sender's confirmation copy is a nice-to-have.
-      console.error('Contact form: failed to send confirmation copy:', confirmError);
-    }
-
-    // Best-effort: also store a copy for the admin panel.
-    try {
-      const { createAdminClient } = await import('@/lib/supabase/admin');
-      const supabase = createAdminClient();
-      await supabase.from('contact_messages').insert({ name, email, subject, message });
-    } catch (e) {
-      console.error('Could not store contact message copy:', e);
+      const { error: confirmError } = await resend.emails.send({
+        from: fromEmail,
+        to: email,
+        subject: 'We received your message — Post2Hire',
+        text: `Hi ${name},\n\nThanks for reaching out to Post2Hire. We've received your message and will get back to you shortly.\n\nYour message:\n"${message}"\n\n— The Post2Hire Team`,
+      });
+      if (confirmError) {
+        console.error('Contact form: failed to send confirmation copy:', confirmError);
+      }
+    } else {
+      console.error('Contact form: RESEND_API_KEY or CONTACT_TO_EMAIL missing — message stored but no email sent.');
     }
 
     return NextResponse.json({ ok: true });
