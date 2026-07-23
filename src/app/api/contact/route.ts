@@ -81,7 +81,11 @@ export async function POST(req: NextRequest) {
 
     const resend = new Resend(resendKey);
 
-    await resend.emails.send({
+    // The Resend SDK returns { data, error } rather than throwing on API
+    // errors (e.g. the resend.dev testing-domain restriction), so both
+    // results must be checked explicitly — otherwise a rejected send is
+    // silently reported to the user as success.
+    const { error: notifyError } = await resend.emails.send({
       from: fromEmail,
       to: toEmail,
       replyTo: email,
@@ -89,12 +93,26 @@ export async function POST(req: NextRequest) {
       text: `From: ${name} <${email}>\n\n${message}`,
     });
 
-    await resend.emails.send({
+    if (notifyError) {
+      console.error('Contact form: failed to notify admin inbox:', notifyError);
+      return NextResponse.json(
+        { error: 'Could not send your message right now. Please try again later.' },
+        { status: 502 }
+      );
+    }
+
+    const { error: confirmError } = await resend.emails.send({
       from: fromEmail,
       to: email,
       subject: 'We received your message — Post2Hire',
       text: `Hi ${name},\n\nThanks for reaching out to Post2Hire. We've received your message and will get back to you shortly.\n\nYour message:\n"${message}"\n\n— The Post2Hire Team`,
     });
+
+    if (confirmError) {
+      // Non-fatal — the admin notification above is what actually matters;
+      // the sender's confirmation copy is a nice-to-have.
+      console.error('Contact form: failed to send confirmation copy:', confirmError);
+    }
 
     // Best-effort: also store a copy for the admin panel.
     try {
