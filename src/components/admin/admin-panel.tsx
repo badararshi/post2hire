@@ -45,6 +45,9 @@ export function AdminPanel({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({});
+  const [replyStatus, setReplyStatus] = useState<Record<string, 'sending' | 'sent' | 'error'>>({});
+
   async function saveSettings() {
     setSaving(true);
     setSaved(false);
@@ -55,6 +58,18 @@ export function AdminPanel({
     });
     setSaving(false);
     if (res.ok) setSaved(true);
+  }
+
+  async function sendReply(messageId: string) {
+    const replyText = (replyDrafts[messageId] || '').trim();
+    if (!replyText) return;
+    setReplyStatus((prev) => ({ ...prev, [messageId]: 'sending' }));
+    const res = await fetch('/api/admin/contact/reply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messageId, replyText }),
+    });
+    setReplyStatus((prev) => ({ ...prev, [messageId]: res.ok ? 'sent' : 'error' }));
   }
 
   async function toggleUser(userId: string, currentlyDisabled: boolean) {
@@ -170,6 +185,31 @@ export function AdminPanel({
               </p>
               <p className="mt-1 text-sm text-muted">{m.message}</p>
               <p className="mt-1 text-xs text-muted">{new Date(m.created_at).toLocaleString()}</p>
+
+              <div className="mt-2.5 space-y-1.5">
+                <textarea
+                  rows={2}
+                  placeholder="Type a reply…"
+                  className="input-field text-xs"
+                  value={replyDrafts[m.id] || ''}
+                  onChange={(e) => setReplyDrafts((prev) => ({ ...prev, [m.id]: e.target.value }))}
+                />
+                <div className="flex items-center gap-2.5">
+                  <button
+                    onClick={() => sendReply(m.id)}
+                    disabled={!replyDrafts[m.id]?.trim() || replyStatus[m.id] === 'sending'}
+                    className="btn-secondary text-xs"
+                  >
+                    {replyStatus[m.id] === 'sending' ? 'Sending…' : 'Send reply'}
+                  </button>
+                  {replyStatus[m.id] === 'sent' && (
+                    <span className="text-xs text-success">Sent.</span>
+                  )}
+                  {replyStatus[m.id] === 'error' && (
+                    <span className="text-xs text-danger">Could not send. Check email configuration.</span>
+                  )}
+                </div>
+              </div>
             </div>
           ))}
         </div>
