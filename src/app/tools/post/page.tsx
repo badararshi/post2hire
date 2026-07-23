@@ -32,7 +32,7 @@ export default async function PostToolPage() {
           label="Advertisement"
           width={300}
           height={250}
-          snippet={ads.adsEnabled ? ads.mid : undefined}
+          zone={ads.adsEnabled && ads.mid ? 'mid' : undefined}
         />
       </div>
     </div>

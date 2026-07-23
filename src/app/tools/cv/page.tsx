@@ -34,7 +34,7 @@ export default async function CvToolPage() {
           label="Advertisement"
           width={300}
           height={250}
-          snippet={ads.adsEnabled ? ads.mid : undefined}
+          zone={ads.adsEnabled && ads.mid ? 'mid' : undefined}
         />
       </div>
     </div>

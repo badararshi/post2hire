@@ -87,7 +87,7 @@ export default async function HomePage() {
           label="Advertisement"
           width={728}
           height={90}
-          snippet={ads.adsEnabled ? ads.header : undefined}
+          zone={ads.adsEnabled && ads.header ? 'header' : undefined}
         />
       </div>
     </div>

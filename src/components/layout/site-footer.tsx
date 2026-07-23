@@ -13,7 +13,7 @@ export async function SiteFooter() {
           width={468}
           height={60}
           className="mb-8"
-          snippet={ads.adsEnabled ? ads.footer : undefined}
+          zone={ads.adsEnabled && ads.footer ? 'footer' : undefined}
         />
         <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
           <p className="text-sm text-muted">© {new Date().getFullYear()} Post2Hire. All rights reserved.</p>
