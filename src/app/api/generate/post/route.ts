@@ -7,7 +7,7 @@ import {
 } from '@/lib/ai/prompts/post-prompt';
 import { validateAndRenderPost, validateSubject } from '@/lib/validation/post-validator';
 import { requireVerifiedUser, AuthError } from '@/lib/supabase/require-user';
-import { checkAndIncrementQuota, QuotaError } from '@/lib/supabase/quota';
+import { checkQuota, recordUsage, QuotaError } from '@/lib/supabase/quota';
 import { createClient } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: subjectCheck.error }, { status: 400 });
     }
 
-    await checkAndIncrementQuota(user.id);
+    await checkQuota(user.id);
 
     const ai = getAIProvider();
     const system = buildPostSystemPrompt();
@@ -65,6 +65,8 @@ export async function POST(req: NextRequest) {
       }
       result = validateAndRenderPost(trimmed);
     }
+
+    await recordUsage(user.id);
 
     // Save to recent files (best-effort; do not fail the request if this errors).
     try {

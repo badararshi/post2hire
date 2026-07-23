@@ -9,7 +9,7 @@ import {
 } from '@/lib/ai/prompts/cv-prompt';
 import { checkGrounding } from '@/lib/validation/grounding-check';
 import { requireVerifiedUser, AuthError } from '@/lib/supabase/require-user';
-import { checkAndIncrementQuota, QuotaError } from '@/lib/supabase/quota';
+import { checkQuota, recordUsage, QuotaError } from '@/lib/supabase/quota';
 import { createClient } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Select CV, cover letter, or both.' }, { status: 400 });
     }
 
-    await checkAndIncrementQuota(user.id);
+    await checkQuota(user.id);
     const ai = getAIProvider();
 
     // Refinement mode for a single already-generated document.
@@ -68,6 +68,7 @@ export async function POST(req: NextRequest) {
         temperature: 0.5,
       });
       const clean = target === 'cv' ? splitCvAndFlags(revised).cv : revised.trim();
+      await recordUsage(user.id);
       return NextResponse.json({ [target === 'cv' ? 'cv' : 'coverLetter']: clean });
     }
 
@@ -107,6 +108,8 @@ export async function POST(req: NextRequest) {
         result.groundingWarnings = [...(result.groundingWarnings || []), ...grounding.issues];
       }
     }
+
+    await recordUsage(user.id);
 
     // Best-effort save to recent files.
     try {
