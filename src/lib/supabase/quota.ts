@@ -18,7 +18,7 @@ const DEFAULT_DAILY_LIMIT = 20;
 export async function checkQuota(userId: string): Promise<void> {
   const supabase = createAdminClient();
 
-  const { data: settings, error: settingsError } = await supabase
+  const { data: settings } = await supabase
     .from('site_settings')
     .select('daily_generation_limit')
     .eq('id', 1)
@@ -27,21 +27,11 @@ export async function checkQuota(userId: string): Promise<void> {
   const limit = settings?.daily_generation_limit ?? DEFAULT_DAILY_LIMIT;
 
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-  const { count, error: countError } = await supabase
+  const { count } = await supabase
     .from('usage_log')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', userId)
     .gte('created_at', since);
-
-  console.log('[quota] checkQuota debug', {
-    userId,
-    settings,
-    settingsError,
-    limit,
-    since,
-    count,
-    countError,
-  });
 
   if ((count ?? 0) >= limit) {
     throw new QuotaError(

@@ -40,7 +40,7 @@ export default async function HomePage() {
             <h2 className="font-display text-lg font-bold text-ink">LinkedIn Post Creator</h2>
             <p className="mt-2 text-sm text-muted">
               Type a subject, get a polished, engagement-ready LinkedIn post — problem,
-              solution, and step-by-step advice included. Add a matching image in one click.
+              solution, and step-by-step advice included.
             </p>
           </div>
           <span className="mt-6 inline-flex items-center text-sm font-semibold text-azure">
