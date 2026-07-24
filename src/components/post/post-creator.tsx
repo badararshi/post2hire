@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { countWords } from '@/lib/text/unicode';
 import { recordDownloadAndShouldPromptShare } from '@/lib/growth/share-nudge';
 import { trackEvent } from '@/lib/growth/track';
+import { buildShareTexts } from '@/lib/growth/share-text';
 import { ShareNudgeModal } from '@/components/growth/share-nudge-modal';
 
 interface GenerateResponse {
@@ -101,6 +102,12 @@ export function PostCreator() {
     setWarnings([]);
     setError('');
   }
+
+  const { full: shareCaption, tweetSafe: tweetCaption } = buildShareTexts(
+    'Just used Post2Hire to write a polished LinkedIn post about "',
+    subject,
+    `" in under a minute — free AI tool, worth checking out if you're building your presence. #CareerTools #AI #LinkedIn`
+  );
 
   return (
     <div className="space-y-6">
@@ -200,7 +207,8 @@ export function PostCreator() {
       <ShareNudgeModal
         open={shareOpen}
         onClose={() => setShareOpen(false)}
-        shareText={`Just used Post2Hire to write a polished LinkedIn post about "${subject}" in under a minute — free AI tool, worth checking out if you're building your presence. #CareerTools #AI #LinkedIn`}
+        shareText={shareCaption}
+        tweetText={tweetCaption}
       />
     </div>
   );
