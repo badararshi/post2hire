@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { optOutOfShareNudge } from '@/lib/growth/share-nudge';
+import { trackEvent } from '@/lib/growth/track';
 
 interface ShareNudgeModalProps {
   open: boolean;
@@ -37,6 +38,7 @@ export function ShareNudgeModal({ open, onClose, shareText }: ShareNudgeModalPro
       '_blank',
       'noopener,noreferrer'
     );
+    trackEvent('share_click', 'linkedin');
   }
 
   function shareX() {
@@ -45,6 +47,7 @@ export function ShareNudgeModal({ open, onClose, shareText }: ShareNudgeModalPro
       '_blank',
       'noopener,noreferrer'
     );
+    trackEvent('share_click', 'x');
     onClose();
   }
 

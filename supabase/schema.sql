@@ -161,6 +161,28 @@ create table if not exists public.audit_log (
 alter table public.audit_log enable row level security;
 
 -- ---------------------------------------------------------------------------
+-- growth_events: downloads, share-nudge clicks, and admin share-request
+-- nudges, per user — powers the "frequent downloaders who never share"
+-- view in /admin.
+-- ---------------------------------------------------------------------------
+create table if not exists public.growth_events (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  event_type text not null check (event_type in ('download', 'share_click', 'nudge_sent')),
+  platform text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists growth_events_user_id_idx on public.growth_events(user_id);
+
+alter table public.growth_events enable row level security;
+
+create policy "Users can log their own growth events"
+  on public.growth_events for insert
+  with check (auth.uid() = user_id);
+-- No select policy — read only via the admin panel's service-role client.
+
+-- ---------------------------------------------------------------------------
 -- Storage bucket for uploaded CVs / generated files (private by default)
 -- ---------------------------------------------------------------------------
 insert into storage.buckets (id, name, public)

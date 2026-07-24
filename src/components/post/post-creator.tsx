@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { countWords } from '@/lib/text/unicode';
 import { recordDownloadAndShouldPromptShare } from '@/lib/growth/share-nudge';
+import { trackEvent } from '@/lib/growth/track';
 import { ShareNudgeModal } from '@/components/growth/share-nudge-modal';
 
 interface GenerateResponse {
@@ -85,6 +86,7 @@ export function PostCreator() {
     a.download = kind === 'post-txt' ? 'LinkedIn_Post.txt' : 'LinkedIn_Post.docx';
     a.click();
     URL.revokeObjectURL(url);
+    trackEvent('download');
 
     if (recordDownloadAndShouldPromptShare()) {
       setShareOpen(true);

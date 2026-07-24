@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { recordDownloadAndShouldPromptShare } from '@/lib/growth/share-nudge';
+import { trackEvent } from '@/lib/growth/track';
 import { ShareNudgeModal } from '@/components/growth/share-nudge-modal';
 
 type Step = 'upload' | 'details' | 'results';
@@ -133,6 +134,7 @@ export function CvGenerator() {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+    trackEvent('download');
 
     if (recordDownloadAndShouldPromptShare()) {
       setShareOpen(true);

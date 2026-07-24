@@ -29,16 +29,25 @@ interface MessageRow {
   created_at: string;
 }
 
+interface NonSharerRow {
+  userId: string;
+  email: string;
+  downloadCount: number;
+  lastNudgeSent: string | null;
+}
+
 export function AdminPanel({
   initialSettings,
   initialUsers,
   initialMessages,
   failedCount,
+  frequentNonSharers,
 }: {
   initialSettings: Settings;
   initialUsers: UserRow[];
   initialMessages: MessageRow[];
   failedCount: number;
+  frequentNonSharers: NonSharerRow[];
 }) {
   const [settings, setSettings] = useState(initialSettings);
   const [users, setUsers] = useState(initialUsers);
@@ -47,6 +56,7 @@ export function AdminPanel({
 
   const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({});
   const [replyStatus, setReplyStatus] = useState<Record<string, 'sending' | 'sent' | 'error'>>({});
+  const [nudgeStatus, setNudgeStatus] = useState<Record<string, 'sending' | 'sent' | 'error'>>({});
 
   async function saveSettings() {
     setSaving(true);
@@ -70,6 +80,16 @@ export function AdminPanel({
       body: JSON.stringify({ messageId, replyText }),
     });
     setReplyStatus((prev) => ({ ...prev, [messageId]: res.ok ? 'sent' : 'error' }));
+  }
+
+  async function sendGrowthNudge(userId: string) {
+    setNudgeStatus((prev) => ({ ...prev, [userId]: 'sending' }));
+    const res = await fetch('/api/admin/growth/nudge', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId }),
+    });
+    setNudgeStatus((prev) => ({ ...prev, [userId]: res.ok ? 'sent' : 'error' }));
   }
 
   async function toggleUser(userId: string, currentlyDisabled: boolean) {
@@ -209,6 +229,45 @@ export function AdminPanel({
                     <span className="text-xs text-danger">Could not send. Check email configuration.</span>
                   )}
                 </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="card">
+        <h2 className="font-display font-bold text-ink">Frequent downloaders, never shared</h2>
+        <p className="mt-1 text-xs text-muted">
+          10+ downloads, 0 share-nudge clicks. Send a manual one-off request — you control timing.
+        </p>
+        <div className="mt-4 max-h-96 overflow-y-auto rounded-card border border-line">
+          {frequentNonSharers.length === 0 && (
+            <p className="px-4 py-3 text-sm text-muted">No one qualifies yet.</p>
+          )}
+          {frequentNonSharers.map((u) => (
+            <div
+              key={u.userId}
+              className="flex items-center justify-between border-b border-line px-4 py-3 last:border-0"
+            >
+              <div>
+                <p className="text-sm font-medium text-ink">{u.email}</p>
+                <p className="text-xs text-muted">
+                  {u.downloadCount} downloads
+                  {u.lastNudgeSent && ` · last asked ${new Date(u.lastNudgeSent).toLocaleDateString()}`}
+                </p>
+              </div>
+              <div className="flex items-center gap-2.5">
+                {nudgeStatus[u.userId] === 'sent' && <span className="text-xs text-success">Sent.</span>}
+                {nudgeStatus[u.userId] === 'error' && (
+                  <span className="text-xs text-danger">Failed to send.</span>
+                )}
+                <button
+                  onClick={() => sendGrowthNudge(u.userId)}
+                  disabled={nudgeStatus[u.userId] === 'sending'}
+                  className="btn-secondary text-xs"
+                >
+                  {nudgeStatus[u.userId] === 'sending' ? 'Sending…' : 'Send share request'}
+                </button>
               </div>
             </div>
           ))}
