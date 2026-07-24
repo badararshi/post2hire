@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { recordDownloadAndShouldPromptShare } from '@/lib/growth/share-nudge';
+import { ShareNudgeModal } from '@/components/growth/share-nudge-modal';
 
 type Step = 'upload' | 'details' | 'results';
 type OutputChoice = 'cv' | 'letter' | 'both';
@@ -36,6 +38,7 @@ export function CvGenerator() {
   const [flags, setFlags] = useState<string[]>([]);
   const [groundingWarnings, setGroundingWarnings] = useState<string[]>([]);
   const [confirmed, setConfirmed] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -130,6 +133,10 @@ export function CvGenerator() {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+
+    if (recordDownloadAndShouldPromptShare()) {
+      setShareOpen(true);
+    }
   }
 
   return (
@@ -327,6 +334,14 @@ export function CvGenerator() {
           </label>
         </div>
       )}
+
+      <ShareNudgeModal
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        shareText={`Just used Post2Hire to tailor my CV${
+          roleTitle ? ` for a ${roleTitle} role` : ''
+        } in under a minute — free AI tool, worth checking out if you're job hunting. #JobSearch #CareerTools #AI`}
+      />
     </div>
   );
 }

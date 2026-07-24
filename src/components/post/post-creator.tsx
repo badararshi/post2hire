@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { countWords } from '@/lib/text/unicode';
+import { recordDownloadAndShouldPromptShare } from '@/lib/growth/share-nudge';
+import { ShareNudgeModal } from '@/components/growth/share-nudge-modal';
 
 interface GenerateResponse {
   post: string;
@@ -23,6 +25,7 @@ export function PostCreator() {
   const [charCount, setCharCount] = useState(0);
   const [boldPercent, setBoldPercent] = useState(0);
   const [warnings, setWarnings] = useState<string[]>([]);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const wordCount = useMemo(() => countWords(subject), [subject]);
   const overWordLimit = wordCount > 32;
@@ -82,6 +85,10 @@ export function PostCreator() {
     a.download = kind === 'post-txt' ? 'LinkedIn_Post.txt' : 'LinkedIn_Post.docx';
     a.click();
     URL.revokeObjectURL(url);
+
+    if (recordDownloadAndShouldPromptShare()) {
+      setShareOpen(true);
+    }
   }
 
   function handleClear() {
@@ -187,6 +194,12 @@ export function PostCreator() {
           </p>
         </div>
       )}
+
+      <ShareNudgeModal
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        shareText={`Just used Post2Hire to write a polished LinkedIn post about "${subject}" in under a minute — free AI tool, worth checking out if you're building your presence. #CareerTools #AI #LinkedIn`}
+      />
     </div>
   );
 }
