@@ -42,6 +42,30 @@ export function RecentFiles({ initialItems }: { initialItems: Item[] }) {
     }
   }
 
+  async function handleDownload(id: string, type: string) {
+    const { data } = await supabase.from('generated_items').select('content').eq('id', id).single();
+    if (!data) return;
+
+    const kind = type === 'linkedin_post' ? 'post-docx' : type === 'cv' ? 'cv-docx' : 'letter-docx';
+
+    const res = await fetch('/api/export', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind, content: data.content, name: 'Candidate', role: 'Role' }),
+    });
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const disposition = res.headers.get('Content-Disposition') || '';
+    const match = disposition.match(/filename="(.+)"/);
+    const filename = match ? match[1] : 'document';
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   async function handleDeleteAll() {
     if (!window.confirm('Delete all saved files? This cannot be undone.')) return;
     const ids = items.map((i) => i.id);
@@ -69,7 +93,10 @@ export function RecentFiles({ initialItems }: { initialItems: Item[] }) {
             </div>
             <div className="flex gap-2">
               <button onClick={() => handleView(item.id)} className="btn-ghost text-xs">
-                View / re-download
+                View
+              </button>
+              <button onClick={() => handleDownload(item.id, item.type)} className="btn-ghost text-xs">
+                Download
               </button>
               <button onClick={() => handleRename(item.id)} className="btn-ghost text-xs">
                 Rename
