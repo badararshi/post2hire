@@ -36,7 +36,7 @@ export function RecentFiles({ initialItems }: { initialItems: Item[] }) {
   async function handleView(id: string) {
     const { data } = await supabase.from('generated_items').select('content').eq('id', id).single();
     if (data) {
-      const blob = new Blob([data.content], { type: 'text/plain' });
+      const blob = new Blob([data.content], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
     }
