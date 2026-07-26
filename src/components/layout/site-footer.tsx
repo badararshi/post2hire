@@ -19,6 +19,8 @@ export async function SiteFooter() {
           <Link href="/free-ats-resume-builder" className="hover:text-azure">Free ATS Resume Builder</Link>
           <Link href="/free-ai-cover-letter-generator" className="hover:text-azure">Free Cover Letter Generator</Link>
           <Link href="/free-linkedin-post-generator" className="hover:text-azure">Free LinkedIn Post Generator</Link>
+          <Link href="/ai-resume-builder-for-freshers" className="hover:text-azure">Resume Builder for Freshers</Link>
+          <Link href="/cover-letter-for-career-change" className="hover:text-azure">Cover Letter for Career Change</Link>
         </nav>
         <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
           <p className="text-sm text-muted">© {new Date().getFullYear()} Post2Hire. All rights reserved.</p>

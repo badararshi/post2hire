@@ -8,6 +8,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/free-ats-resume-builder',
     '/free-ai-cover-letter-generator',
     '/free-linkedin-post-generator',
+    '/ai-resume-builder-for-freshers',
+    '/cover-letter-for-career-change',
     '/contact',
     '/privacy',
     '/terms',

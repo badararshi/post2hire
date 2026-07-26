@@ -5,7 +5,7 @@ import { LandingShell } from '@/components/marketing/landing-shell';
 export const metadata: Metadata = {
   title: 'Free AI Cover Letter Generator — Honest, Job-Specific Letters',
   description:
-    'Paste your CV and a job description, get back a factual, persuasive cover letter in under a minute. No invented achievements, no generic template filler. Free to use.',
+    'Write a free job application cover letter in under a minute. Paste your CV and a job description, get back a factual, persuasive letter — no invented achievements, no generic template filler.',
 };
 
 const faqs = [
