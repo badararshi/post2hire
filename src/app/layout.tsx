@@ -50,6 +50,9 @@ export const metadata: Metadata = {
     title: 'Post2Hire | Create. Tailor. Get Hired.',
     images: ['/og-image.png'],
   },
+  verification: {
+    google: 'hkM516P1_cp-pkT0kswjKyiQGui7jvNsYc8YB36eqE8',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
