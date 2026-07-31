@@ -11,6 +11,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/free-linkedin-post-generator',
     '/ai-resume-builder-for-freshers',
     '/cover-letter-for-career-change',
+    '/post2hire-vs-chatgpt-resume',
+    '/free-vs-paid-ai-resume-tools',
     '/contact',
     '/privacy',
     '/terms',

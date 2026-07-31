@@ -107,6 +107,18 @@ export default async function AiJobSearchToolsHub() {
         isn&apos;t to make you look like someone else — it&apos;s to make the strongest honest
         case for who you actually are, faster than doing it by hand.
       </p>
+
+      <h2>How Post2Hire compares</h2>
+      <ul>
+        <li>
+          <Link href="/post2hire-vs-chatgpt-resume">Post2Hire vs. Just Asking ChatGPT</Link> — what
+          you give up by using a general-purpose chatbot instead of a tool built for this.
+        </li>
+        <li>
+          <Link href="/free-vs-paid-ai-resume-tools">Free vs. Paid AI Resume Tools</Link> — what a
+          subscription typically buys you, honestly, and where a free tool fits.
+        </li>
+      </ul>
     </LandingShell>
   );
 }
