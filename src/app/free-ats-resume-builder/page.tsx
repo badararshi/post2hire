@@ -43,9 +43,17 @@ export default async function AtsResumeBuilderPage() {
       eyebrow="Free tool"
       h1="Free ATS-Friendly Resume Builder"
       intro="Upload your CV, paste the job description you're applying to, and get back a tailored, ATS-safe resume in under a minute — grounded only in your real experience, free to use."
+      quickAnswer="Upload your CV, paste a job description, and Post2Hire returns a resume formatted with standard, ATS-parseable section headings and language aligned to the role — built only from what's genuinely in your CV, with no invented experience."
+      lastUpdated="July 2026"
+      hubHref="/ai-job-search-tools"
+      hubLabel="All free AI job search tools"
       ctaHref={ctaHref}
       ctaLabel="Tailor my resume free"
       faqs={faqs}
+      relatedLinks={[
+        { href: '/ai-resume-builder-for-freshers', label: 'Resume Builder for Freshers & Students' },
+        { href: '/free-ai-cover-letter-generator', label: 'Free AI Cover Letter Generator' },
+      ]}
     >
       <h2>Why most resumes never reach a human</h2>
       <p>

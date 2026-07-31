@@ -43,9 +43,17 @@ export default async function LinkedInPostGeneratorPage() {
       eyebrow="Free tool"
       h1="Free AI LinkedIn Post Generator"
       intro="Type a subject, get back a polished, properly-formatted LinkedIn post — ready to copy and paste in under a minute."
+      quickAnswer="Type any subject and Post2Hire generates a LinkedIn post with a real hook, a clear problem and solution, numbered steps, one genuine engagement question, and correctly rendered bold text — free, no LinkedIn login required."
+      lastUpdated="July 2026"
+      hubHref="/ai-job-search-tools"
+      hubLabel="All free AI job search tools"
       ctaHref={ctaHref}
       ctaLabel="Write my post free"
       faqs={faqs}
+      relatedLinks={[
+        { href: '/free-ats-resume-builder', label: 'Free ATS-Friendly Resume Builder' },
+        { href: '/free-ai-cover-letter-generator', label: 'Free AI Cover Letter Generator' },
+      ]}
     >
       <h2>Why most AI-written LinkedIn posts read the same</h2>
       <p>

@@ -16,6 +16,7 @@ export async function SiteFooter() {
           zone={ads.adsEnabled && ads.footer ? 'footer' : undefined}
         />
         <nav className="mb-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-center text-sm text-muted sm:justify-start sm:text-left">
+          <Link href="/ai-job-search-tools" className="font-semibold hover:text-azure">All Free AI Job Search Tools</Link>
           <Link href="/free-ats-resume-builder" className="hover:text-azure">Free ATS Resume Builder</Link>
           <Link href="/free-ai-cover-letter-generator" className="hover:text-azure">Free Cover Letter Generator</Link>
           <Link href="/free-linkedin-post-generator" className="hover:text-azure">Free LinkedIn Post Generator</Link>

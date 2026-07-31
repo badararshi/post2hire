@@ -39,9 +39,17 @@ export default async function FreshersResumeBuilderPage() {
       eyebrow="Free tool"
       h1="AI Resume Builder for Freshers & Students"
       intro="Writing your first resume with little or no work experience is its own specific problem. Upload what you actually have, paste the job description, and get back a tailored, ATS-safe resume built around your real background — free."
+      quickAnswer="Upload whatever you have — internships, projects, coursework, part-time work — and Post2Hire builds an ATS-safe resume around your real background, honestly flagging any requirement you don't yet meet instead of pretending otherwise."
+      lastUpdated="July 2026"
+      hubHref="/ai-job-search-tools"
+      hubLabel="All free AI job search tools"
       ctaHref={ctaHref}
       ctaLabel="Build my first resume free"
       faqs={faqs}
+      relatedLinks={[
+        { href: '/free-ats-resume-builder', label: 'Free ATS-Friendly Resume Builder' },
+        { href: '/free-linkedin-post-generator', label: 'Free AI LinkedIn Post Generator' },
+      ]}
     >
       <h2>The first-resume problem is different from the experienced-hire problem</h2>
       <p>

@@ -39,9 +39,17 @@ export default async function CareerChangeCoverLetterPage() {
       eyebrow="Free tool"
       h1="Cover Letter Generator for Career Changers"
       intro="Changing careers means every job description highlights the experience you don't have yet. Get a free, honest cover letter that makes the strongest real case for your transferable experience — without overclaiming."
+      quickAnswer="Upload your current-field CV and the job description for the role you're switching into, and Post2Hire writes a cover letter that honestly connects your real, transferable experience to what the new role needs — without claiming direct experience you don't have."
+      lastUpdated="July 2026"
+      hubHref="/ai-job-search-tools"
+      hubLabel="All free AI job search tools"
       ctaHref={ctaHref}
       ctaLabel="Write my career-change letter free"
       faqs={faqs}
+      relatedLinks={[
+        { href: '/free-ai-cover-letter-generator', label: 'Free AI Cover Letter Generator' },
+        { href: '/free-ats-resume-builder', label: 'Free ATS-Friendly Resume Builder' },
+      ]}
     >
       <h2>The career-change cover letter has a specific problem</h2>
       <p>

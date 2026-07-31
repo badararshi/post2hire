@@ -43,9 +43,17 @@ export default async function CoverLetterGeneratorPage() {
       eyebrow="Free tool"
       h1="Free AI Cover Letter Generator"
       intro="Paste your CV and the job description, get back a specific, factual cover letter in under a minute — not a generic template with your name swapped in."
+      quickAnswer="Paste your CV and a job description, and Post2Hire writes a job application cover letter that pulls two or three real, relevant examples from your background — grounded in your actual CV, not invented achievements or generic filler."
+      lastUpdated="July 2026"
+      hubHref="/ai-job-search-tools"
+      hubLabel="All free AI job search tools"
       ctaHref={ctaHref}
       ctaLabel="Write my cover letter free"
       faqs={faqs}
+      relatedLinks={[
+        { href: '/cover-letter-for-career-change', label: 'Cover Letter for Career Changers' },
+        { href: '/free-ats-resume-builder', label: 'Free ATS-Friendly Resume Builder' },
+      ]}
     >
       <h2>Why generic cover letters get ignored</h2>
       <p>
