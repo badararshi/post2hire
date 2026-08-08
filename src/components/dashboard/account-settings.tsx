@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { PasswordInput } from '@/components/ui/password-input';
 
 export function AccountSettings() {
   const router = useRouter();
@@ -57,11 +58,10 @@ export function AccountSettings() {
       <form onSubmit={handlePasswordChange} className="card space-y-3">
         <h2 className="font-display font-bold text-ink">Change password</h2>
         {pwMessage && <p className="text-sm text-muted">{pwMessage}</p>}
-        <input
-          type="password"
+        <PasswordInput
+          id="newPassword"
           placeholder="New password"
           minLength={8}
-          className="input-field"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
         />

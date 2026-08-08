@@ -30,7 +30,7 @@ export function PostCreator() {
   const [shareOpen, setShareOpen] = useState(false);
 
   const wordCount = useMemo(() => countWords(subject), [subject]);
-  const overWordLimit = wordCount > 32;
+  const overWordLimit = wordCount > 250;
 
   async function callGenerate(mode: 'generate' | 'regenerate' | 'improve' | 'shorten') {
     setError('');
@@ -116,16 +116,17 @@ export function PostCreator() {
           <label htmlFor="subject" className="mb-1.5 block text-sm font-medium text-ink">
             What would you like to write about?
           </label>
-          <input
+          <textarea
             id="subject"
+            rows={3}
             className="input-field text-base"
             placeholder="e.g. Why most SMEs run out of cash despite being profitable"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            maxLength={400}
+            maxLength={2000}
           />
           <p className={`mt-1.5 text-xs ${overWordLimit ? 'font-semibold text-danger' : 'text-muted'}`}>
-            {wordCount} / 32 words
+            {wordCount} / 250 words
           </p>
         </div>
 

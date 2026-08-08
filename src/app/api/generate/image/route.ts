@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     await requireVerifiedUser();
 
     const body = await req.json();
-    const subject: string = (body.subject || '').toString().slice(0, 500);
+    const subject: string = (body.subject || '').toString().slice(0, 2000);
 
     if (!subject.trim()) {
       return NextResponse.json({ error: 'Subject is required to generate an image.' }, { status: 400 });

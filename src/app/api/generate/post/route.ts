@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     const user = await requireVerifiedUser();
 
     const body = await req.json();
-    const subject: string = (body.subject || '').toString().slice(0, 500);
+    const subject: string = (body.subject || '').toString().slice(0, 2000);
     const mode: 'generate' | 'regenerate' | 'improve' | 'shorten' = body.mode || 'generate';
     const currentPost: string | undefined = body.currentPost;
 

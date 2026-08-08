@@ -78,8 +78,8 @@ export function validateSubject(subject: string): { ok: boolean; error?: string 
     return { ok: false, error: 'Please enter a subject.' };
   }
   const wordCount = trimmed.split(/\s+/).length;
-  if (wordCount > 32) {
-    return { ok: false, error: `Subject is ${wordCount} words; the limit is 32 words.` };
+  if (wordCount > 250) {
+    return { ok: false, error: `Subject is ${wordCount} words; the limit is 250 words.` };
   }
   return { ok: true };
 }

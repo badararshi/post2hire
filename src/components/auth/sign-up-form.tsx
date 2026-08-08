@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Turnstile } from '@/components/ui/turnstile';
+import { PasswordInput } from '@/components/ui/password-input';
 
 export function SignUpForm() {
   const router = useRouter();
@@ -81,13 +82,11 @@ export function SignUpForm() {
         <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-ink">
           Password
         </label>
-        <input
+        <PasswordInput
           id="password"
-          type="password"
           required
           minLength={8}
           autoComplete="new-password"
-          className="input-field"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -98,12 +97,10 @@ export function SignUpForm() {
         <label htmlFor="confirmPassword" className="mb-1.5 block text-sm font-medium text-ink">
           Confirm password
         </label>
-        <input
+        <PasswordInput
           id="confirmPassword"
-          type="password"
           required
           autoComplete="new-password"
-          className="input-field"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
