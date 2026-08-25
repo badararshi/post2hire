@@ -43,7 +43,14 @@ export class GeminiProvider implements AIProvider {
         body: JSON.stringify({
           systemInstruction: { role: 'system', parts: [{ text: system }] },
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { temperature, maxOutputTokens },
+          // These tasks are careful rewriting against explicit formatting
+          // rules, not problems that benefit from extended reasoning — and
+          // "thinking" models spend many extra seconds on an internal
+          // reasoning pass before producing output, which is what was
+          // pushing generation past the function timeout. Disabling it
+          // trades unneeded reasoning depth for materially faster
+          // responses on this specific workload.
+          generationConfig: { temperature, maxOutputTokens, thinkingConfig: { thinkingBudget: 0 } },
         }),
       },
       timeoutMs
