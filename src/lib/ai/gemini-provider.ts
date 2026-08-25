@@ -47,10 +47,14 @@ export class GeminiProvider implements AIProvider {
           // rules, not problems that benefit from extended reasoning — and
           // "thinking" models spend many extra seconds on an internal
           // reasoning pass before producing output, which is what was
-          // pushing generation past the function timeout. Disabling it
-          // trades unneeded reasoning depth for materially faster
-          // responses on this specific workload.
-          generationConfig: { temperature, maxOutputTokens, thinkingConfig: { thinkingBudget: 0 } },
+          // pushing generation past the function timeout. Gemini 2.5-era
+          // models use thinkingConfig.thinkingBudget (0 disables it); the
+          // 3.x series replaced that with thinkingConfig.thinkingLevel
+          // ("low" minimizes it — sending both in the same request is
+          // rejected with a 400). This account's model currently resolves
+          // to a 3.x Flash model, so thinkingLevel is what actually takes
+          // effect here.
+          generationConfig: { temperature, maxOutputTokens, thinkingConfig: { thinkingLevel: 'low' } },
         }),
       },
       timeoutMs
