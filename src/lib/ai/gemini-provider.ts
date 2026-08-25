@@ -31,18 +31,23 @@ export class GeminiProvider implements AIProvider {
     prompt,
     temperature = 0.8,
     maxOutputTokens = 4096,
+    timeoutMs,
   }: GenerateTextOptions): Promise<string> {
     const url = `${GEMINI_BASE}/${this.textModel}:generateContent?key=${this.apiKey}`;
 
-    const res = await fetchWithTimeout(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { role: 'system', parts: [{ text: system }] },
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { temperature, maxOutputTokens },
-      }),
-    });
+    const res = await fetchWithTimeout(
+      url,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { role: 'system', parts: [{ text: system }] },
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { temperature, maxOutputTokens },
+        }),
+      },
+      timeoutMs
+    );
 
     if (!res.ok) {
       const errText = await res.text();

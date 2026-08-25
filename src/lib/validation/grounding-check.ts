@@ -44,7 +44,16 @@ ${generatedDocument}
 Check now.`;
 
   try {
-    const response = await ai.generateText({ system, prompt, temperature: 0.1, maxOutputTokens: 500 });
+    // Short timeout — this check already fails open below on any error,
+    // so it shouldn't eat into the time budget the primary document
+    // generation call needs to finish within Vercel's function limit.
+    const response = await ai.generateText({
+      system,
+      prompt,
+      temperature: 0.1,
+      maxOutputTokens: 500,
+      timeoutMs: 10_000,
+    });
     const grounded = /GROUNDED:\s*yes/i.test(response);
     const issues = Array.from(response.matchAll(/ISSUE:\s*(.+)/gi)).map((m) => m[1].trim());
     return { grounded, issues };

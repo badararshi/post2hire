@@ -44,13 +44,27 @@ export async function POST(req: NextRequest) {
     let raw = await ai.generateText({ system, prompt, temperature: 0.85 });
     let result = validateAndRenderPost(raw);
 
-    // One corrective retry if hard validation fails (length or bold %).
+    // One corrective retry if hard validation fails (length or bold %). Given
+    // a single generation call can already take close to the per-call
+    // timeout under heavy upstream load, this retry gets a short timeout of
+    // its own and fails soft (keeping the first attempt) rather than
+    // risking the combined total exceeding Vercel's 60s function limit.
     if (!result.ok) {
-      const correctionPrompt = `${prompt}\n\nIMPORTANT CORRECTION NEEDED: Your previous attempt failed these checks: ${result.errors.join(
-        ' '
-      )} Regenerate the full post, fixing this. Stay well under 3000 characters and keep bold phrases to a small handful under the 20% limit.`;
-      raw = await ai.generateText({ system, prompt: correctionPrompt, temperature: 0.7 });
-      result = validateAndRenderPost(raw);
+      try {
+        const correctionPrompt = `${prompt}\n\nIMPORTANT CORRECTION NEEDED: Your previous attempt failed these checks: ${result.errors.join(
+          ' '
+        )} Regenerate the full post, fixing this. Stay well under 3000 characters and keep bold phrases to a small handful under the 20% limit.`;
+        const retryRaw = await ai.generateText({
+          system,
+          prompt: correctionPrompt,
+          temperature: 0.7,
+          timeoutMs: 12_000,
+        });
+        raw = retryRaw;
+        result = validateAndRenderPost(raw);
+      } catch (err) {
+        console.error('Post generation: corrective retry failed, keeping first draft:', err);
+      }
     }
 
     // Last-resort hard enforcement: if still over the character limit, trim

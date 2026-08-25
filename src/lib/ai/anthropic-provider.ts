@@ -33,22 +33,27 @@ export class AnthropicProvider implements AIProvider {
     prompt,
     temperature = 0.8,
     maxOutputTokens = 4096,
+    timeoutMs,
   }: GenerateTextOptions): Promise<string> {
-    const res = await fetchWithTimeout(ANTHROPIC_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': this.apiKey,
-        'anthropic-version': '2023-06-01',
+    const res = await fetchWithTimeout(
+      ANTHROPIC_URL,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': this.apiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: this.model,
+          max_tokens: maxOutputTokens,
+          temperature,
+          system,
+          messages: [{ role: 'user', content: prompt }],
+        }),
       },
-      body: JSON.stringify({
-        model: this.model,
-        max_tokens: maxOutputTokens,
-        temperature,
-        system,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    });
+      timeoutMs
+    );
 
     if (!res.ok) {
       const errText = await res.text();

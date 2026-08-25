@@ -3,6 +3,8 @@ export interface GenerateTextOptions {
   prompt: string;
   temperature?: number;
   maxOutputTokens?: number;
+  /** Overrides the default per-request timeout (ms). See fetch-with-timeout.ts. */
+  timeoutMs?: number;
 }
 
 export interface GenerateImageOptions {
