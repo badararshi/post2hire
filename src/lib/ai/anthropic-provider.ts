@@ -1,6 +1,7 @@
 import 'server-only';
 import type { AIProvider, GenerateImageOptions, GenerateImageResult, GenerateTextOptions } from './types';
 import { GeminiProvider } from './gemini-provider';
+import { fetchWithTimeout } from './fetch-with-timeout';
 
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 
@@ -33,7 +34,7 @@ export class AnthropicProvider implements AIProvider {
     temperature = 0.8,
     maxOutputTokens = 4096,
   }: GenerateTextOptions): Promise<string> {
-    const res = await fetch(ANTHROPIC_URL, {
+    const res = await fetchWithTimeout(ANTHROPIC_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

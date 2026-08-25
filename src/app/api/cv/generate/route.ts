@@ -79,33 +79,51 @@ export async function POST(req: NextRequest) {
       groundingWarnings?: string[];
     } = {};
 
-    if (wantCv) {
-      const raw = await ai.generateText({
-        system: buildCvTailorSystemPrompt(),
-        prompt: buildCvTailorUserPrompt(cvText, jobDescription),
-        temperature: 0.5,
-      });
-      const { cv, flags } = splitCvAndFlags(raw);
-      result.cv = cv;
-      result.flags = flags;
+    // The CV and cover letter pipelines are fully independent of each
+    // other (each only depends on cvText + jobDescription), so when both
+    // are requested they run concurrently rather than as four sequential
+    // AI calls — that sequential chain is what was pushing total latency
+    // past Vercel's 60s function limit and surfacing as a generic
+    // "Network error" to the user.
+    const [cvOutcome, letterOutcome] = await Promise.all([
+      wantCv
+        ? (async () => {
+            const raw = await ai.generateText({
+              system: buildCvTailorSystemPrompt(),
+              prompt: buildCvTailorUserPrompt(cvText, jobDescription),
+              temperature: 0.5,
+            });
+            const { cv, flags } = splitCvAndFlags(raw);
+            const grounding = await checkGrounding(ai, cvText, cv);
+            return { cv, flags, groundingIssues: grounding.grounded ? [] : grounding.issues };
+          })()
+        : null,
+      wantCoverLetter
+        ? (async () => {
+            const raw = await ai.generateText({
+              system: buildCoverLetterSystemPrompt(lengthMode),
+              prompt: buildCoverLetterUserPrompt(cvText, jobDescription),
+              temperature: 0.6,
+            });
+            const coverLetter = raw.trim();
+            const grounding = await checkGrounding(ai, cvText, coverLetter);
+            return { coverLetter, groundingIssues: grounding.grounded ? [] : grounding.issues };
+          })()
+        : null,
+    ]);
 
-      const grounding = await checkGrounding(ai, cvText, cv);
-      if (!grounding.grounded) {
-        result.groundingWarnings = grounding.issues;
+    if (cvOutcome) {
+      result.cv = cvOutcome.cv;
+      result.flags = cvOutcome.flags;
+      if (cvOutcome.groundingIssues.length > 0) {
+        result.groundingWarnings = cvOutcome.groundingIssues;
       }
     }
 
-    if (wantCoverLetter) {
-      const letter = await ai.generateText({
-        system: buildCoverLetterSystemPrompt(lengthMode),
-        prompt: buildCoverLetterUserPrompt(cvText, jobDescription),
-        temperature: 0.6,
-      });
-      result.coverLetter = letter.trim();
-
-      const grounding = await checkGrounding(ai, cvText, letter);
-      if (!grounding.grounded) {
-        result.groundingWarnings = [...(result.groundingWarnings || []), ...grounding.issues];
+    if (letterOutcome) {
+      result.coverLetter = letterOutcome.coverLetter;
+      if (letterOutcome.groundingIssues.length > 0) {
+        result.groundingWarnings = [...(result.groundingWarnings || []), ...letterOutcome.groundingIssues];
       }
     }
 

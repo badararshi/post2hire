@@ -5,6 +5,7 @@ import type {
   GenerateImageResult,
   GenerateTextOptions,
 } from './types';
+import { fetchWithTimeout } from './fetch-with-timeout';
 
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
@@ -33,7 +34,7 @@ export class GeminiProvider implements AIProvider {
   }: GenerateTextOptions): Promise<string> {
     const url = `${GEMINI_BASE}/${this.textModel}:generateContent?key=${this.apiKey}`;
 
-    const res = await fetch(url, {
+    const res = await fetchWithTimeout(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -63,7 +64,7 @@ export class GeminiProvider implements AIProvider {
   async generateImage({ prompt }: GenerateImageOptions): Promise<GenerateImageResult> {
     const url = `${GEMINI_BASE}/${this.imageModel}:generateContent?key=${this.apiKey}`;
 
-    const res = await fetch(url, {
+    const res = await fetchWithTimeout(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
