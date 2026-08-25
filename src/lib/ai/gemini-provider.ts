@@ -22,7 +22,7 @@ export class GeminiProvider implements AIProvider {
       );
     }
     this.apiKey = key;
-    this.textModel = process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash';
+    this.textModel = process.env.GEMINI_TEXT_MODEL || 'gemini-3-flash-preview';
     this.imageModel = process.env.GEMINI_IMAGE_MODEL || 'gemini-2.5-flash-image';
   }
 
